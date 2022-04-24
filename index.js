@@ -34,11 +34,13 @@ server.listen(3003, () => {
 
 const newSocketConnectionEventHandler = (socketId) => {
   addOnlineUser(socketId);
+  broadcastOnlineUsers();
   logOnlineUsers();
 };
 
 const disconnectEventHandler = (socketId) => {
   removeOnlineUser(socketId);
+  broadcastOnlineUsers();
   logOnlineUsers();
 };
 
@@ -52,6 +54,22 @@ const removeOnlineUser = (socketId) => {
   if (onlineUsers[socketId]) {
     delete onlineUsers[socketId];
   }
+};
+
+const broadcastOnlineUsers = () => {
+  io.emit("online-users", convertOnlineUsersToArray());
+};
+
+const convertOnlineUsersToArray = () => {
+  const onlineUsersArray = [];
+  Object.entries(onlineUsers).forEach(([key, value]) => {
+    onlineUsersArray.push({
+      socketId: key,
+      nick: value.nick,
+    });
+  });
+
+  return onlineUsersArray;
 };
 
 const logOnlineUsers = () => {
