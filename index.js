@@ -18,10 +18,34 @@ app.get("/", (req, res) => {
   res.send("Simple chat API");
 });
 
-io.on("connection", () => {
-  console.log("new peer connected");
+let onlineUsers = {};
+
+io.on("connection", (socket) => {
+  newSocketConnectionEventHandler(socket.id);
 });
 
 server.listen(3003, () => {
   console.log("listening on 3003");
 });
+
+const newSocketConnectionEventHandler = (socketId) => {
+  addOnlineUser(socketId);
+  logOnlineUsers();
+};
+
+const addOnlineUser = (socketId) => {
+  onlineUsers[socketId] = {
+    nick: null,
+  };
+};
+
+const logOnlineUsers = () => {
+  let size = 0;
+  console.log("Online users: ");
+  Object.entries(onlineUsers).forEach(([key, value]) => {
+    size++;
+    console.log(`${key}: ${value.nick}`);
+  });
+
+  console.log(`Amount of online users: ${size}`);
+};
