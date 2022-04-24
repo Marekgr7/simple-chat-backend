@@ -53,11 +53,11 @@ const disconnectEventHandler = (socketId) => {
 };
 
 const chatMessageEventHandler = (data, socketId) => {
-  const { content, receiverSocketId } = data;
+  const { message, receiverSocketId } = data;
   if (onlineUsers[receiverSocketId]) {
     io.to(receiverSocketId).emit("chat-message", {
       senderSocketId: socketId,
-      content: content,
+      message,
     });
   }
 };
