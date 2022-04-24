@@ -22,6 +22,10 @@ let onlineUsers = {};
 
 io.on("connection", (socket) => {
   newSocketConnectionEventHandler(socket.id);
+
+  socket.on("disconnect", () => {
+    disconnectEventHandler(socket.id);
+  });
 });
 
 server.listen(3003, () => {
@@ -33,10 +37,21 @@ const newSocketConnectionEventHandler = (socketId) => {
   logOnlineUsers();
 };
 
+const disconnectEventHandler = (socketId) => {
+  removeOnlineUser(socketId);
+  logOnlineUsers();
+};
+
 const addOnlineUser = (socketId) => {
   onlineUsers[socketId] = {
     nick: null,
   };
+};
+
+const removeOnlineUser = (socketId) => {
+  if (onlineUsers[socketId]) {
+    delete onlineUsers[socketId];
+  }
 };
 
 const logOnlineUsers = () => {
