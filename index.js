@@ -23,6 +23,10 @@ let onlineUsers = {};
 io.on("connection", (socket) => {
   newSocketConnectionEventHandler(socket.id);
 
+  socket.on("chat-message", (data) => {
+    chatMessageEventHandler(data, socket.id);
+  });
+
   socket.on("disconnect", () => {
     disconnectEventHandler(socket.id);
   });
@@ -42,6 +46,16 @@ const disconnectEventHandler = (socketId) => {
   removeOnlineUser(socketId);
   broadcastOnlineUsers();
   logOnlineUsers();
+};
+
+const chatMessageEventHandler = (data, socketId) => {
+  const { content, receiverSocketId } = data;
+  if (onlineUsers[receiverSocketId]) {
+    io.to(receiverSocketId).emit("chat-message", {
+      senderSocketId: socketId,
+      content: content,
+    });
+  }
 };
 
 const addOnlineUser = (socketId) => {
