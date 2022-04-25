@@ -35,6 +35,10 @@ io.on("connection", (socket) => {
     nickChangeEventHandler(data, socket.id);
   });
 
+  socket.on("countdown", (data) => {
+    countdownHandler(data);
+  });
+
   socket.on("disconnect", () => {
     disconnectEventHandler(socket.id);
   });
@@ -80,6 +84,13 @@ const chatUndoMessageHandler = (data, socketId) => {
       senderSocketId: socketId,
       messageId,
     });
+  }
+};
+
+const countdownHandler = (data) => {
+  const { receiverSocketId, countdownDetails } = data;
+  if (onlineUsers[receiverSocketId]) {
+    io.to(receiverSocketId).emit("countdown", countdownDetails);
   }
 };
 
