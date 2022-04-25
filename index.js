@@ -27,6 +27,10 @@ io.on("connection", (socket) => {
     chatMessageEventHandler(data, socket.id);
   });
 
+  socket.on("chat-message-undo", (data) => {
+    chatUndoMessageHandler(data, socket.id);
+  });
+
   socket.on("nick-change", (data) => {
     nickChangeEventHandler(data, socket.id);
   });
@@ -67,6 +71,16 @@ const nickChangeEventHandler = (data, socketId) => {
   changeUserNick(nick, socketId);
   broadcastOnlineUsers();
   logOnlineUsers();
+};
+
+const chatUndoMessageHandler = (data, socketId) => {
+  const { messageId, receiverSocketId } = data;
+  if (onlineUsers[receiverSocketId]) {
+    io.to(receiverSocketId).emit("chat-message-undo", {
+      senderSocketId: socketId,
+      messageId,
+    });
+  }
 };
 
 const addOnlineUser = (socketId) => {
