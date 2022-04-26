@@ -57,6 +57,7 @@ const newSocketConnectionEventHandler = (socketId) => {
 const disconnectEventHandler = (socketId) => {
   removeOnlineUser(socketId);
   broadcastOnlineUsers();
+  broadcastDisconnectedUserDetails(socketId);
   logOnlineUsers();
 };
 
@@ -120,6 +121,12 @@ const changeUserNick = (newNick, socketId) => {
 
 const broadcastOnlineUsers = () => {
   io.emit("online-users", convertOnlineUsersToArray());
+};
+
+const broadcastDisconnectedUserDetails = (disconnectedUserSocketId = "") => {
+  io.emit("disconnected-user", {
+    disconnectedUserSocketId: disconnectedUserSocketId,
+  });
 };
 
 const convertOnlineUsersToArray = () => {
